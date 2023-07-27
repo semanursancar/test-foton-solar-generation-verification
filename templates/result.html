@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Coordinate Based Monthly Average Solar Generation</title>
+    <style>
+        body {
+            background-color: #d2f1f9;
+            font-family: Arial, sans-serif;
+        }
+        
+        h1 {
+            color: #147c87;
+            text-align: center;
+        }
+        
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        
+        table {
+            background-color: #f0f7f9;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            margin-right: 20px;
+            border-collapse: collapse; /* Tek çizgi çerçeve */
+        }
+        
+        th {
+            color: #147c87;
+            border: 0px solid #147c87; /* Çizgi çerçeve yok */
+            padding: 10px;
+            border-radius: 10px;
+        }
+        
+        td {
+            padding: 10px;
+            text-align: center;
+            border: 0px solid #147c87; /* Çizgi çerçeve yok */
+            border-radius: 10px;
+        }
+        
+        p {
+            text-align: center;
+            margin-top: 20px;
+            color: #147c87;
+        }
+        
+        .chart-container {
+            width: 80%;
+            margin-top: 20px;
+        }
+        
+        .version {
+            text-align: center;
+            margin-top: 20px;
+            color: #147c87;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Coordinate Based Monthly Average Solar Generation</h1>
+    <div class="container">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="20">{{ inputs|safe }}</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+    <br> <!-- Boşluk bırakıldı -->
+
+    <div class="container">
+        <table>
+            <tbody>
+                {{ df|safe }}
+            </tbody>
+        </table>
+
+        <div class="chart-container">
+            <canvas id="line-chart"></canvas>
+        </div>
+    </div>
+
+    <p>{{ user_note }}</p>
+    <div class="version">
+        Version: {{version_info}}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var monthLabels = JSON.parse('{{ month_labels|tojson|safe }}');
+        var averageGenerationData = JSON.parse('{{ average_generation_data|tojson|safe }}');
+        var maxGenCapData = JSON.parse('{{ max_gen_cap|tojson|safe }}');
+    
+        var data = {
+            labels: monthLabels,
+            datasets: [
+                {
+                    label: 'Average Generation [kW]',
+                    data: averageGenerationData,
+                    fill: false,
+                    borderColor: '#147c87',
+                    tension: 0.1
+                },
+                {
+                    label: 'Max. Generation Capacity [kWh]',
+                    data: maxGenCapData,
+                    fill: false,
+                    borderColor: '#ff0000',
+                    tension: 0.1
+                }
+            ]
+        };
+    
+        var options = {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        };
+    
+        var ctx = document.getElementById('line-chart').getContext('2d');
+        var lineChart = new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options: options
+        });
+    </script>
+        
+    
+</body>
+</html>
